@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+#
+# Issue new signed certificate.
+
+set -euo pipefail
+
+workspace=ssl/ca
+root_cfg=ssl/root.conf
+keeper_cfg=ssl/keeper.conf
+
+# Create the certificate signing request.
+openssl req \
+    -new \
+    -config ${keeper_cfg} \
+    -nodes \
+    -keyout ${workspace}/keeper.key \
+    -out ${workspace}/keeper.csr
+
+# Generate the certificate.
+openssl ca \
+    -batch \
+    -extensions ext \
+    -extfile ${keeper_cfg} \
+    -config ${root_cfg} \
+    -cert ${workspace}/root.crt \
+    -keyfile ${workspace}/root.key \
+    -in ${workspace}/keeper.csr \
+    -out ${workspace}/keeper.crt

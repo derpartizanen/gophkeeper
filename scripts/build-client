@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#
+# Build gophkeeper client with specified version.
+
+set -euo pipefail
+
+build_version=$1
+if [[ -z "$build_version" ]]; then
+  echo "usage: $0 <build-version>"
+  exit 1
+fi
+
+package_name=keeperctl
+platforms=("windows/amd64" "darwin/amd64" "darwin/arm64" "linux/amd64")
+
+build_folder=./dist
+build_date=$(date +%F\ %H:%M:%S)
+import_path=main
+root_ca=./ssl/ca/root.crt
+
+for platform in "${platforms[@]}"
+do
+    IFS="/" read -r -a platform_split <<< "${platform}"
+    GOOS=${platform_split[0]}
+    GOARCH=${platform_split[1]}
+
+    output_name=${build_folder}/${package_name}'-'$GOOS'-'$GOARCH
+
+    if [ "${GOOS}" = "windows" ]; then
+        output_name+='.exe'
+    fi
+
+    env GOOS="${GOOS}" GOARCH="${GOARCH}" go build \
+        -ldflags "-X '${import_path}.buildVersion=${build_version}' -X '${import_path}.buildDate=${build_date}'" \
+        -o "${output_name}" \
+        cmd/$package_name/*.go
+done
+
+cp -f ${root_ca} ${build_folder}/rootCA.crt

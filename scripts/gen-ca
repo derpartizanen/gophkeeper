@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+#
+# Generate certificates authority to issue and sign certificates.
+
+set -euo pipefail
+
+workspace=ssl/ca
+config=ssl/root.conf
+
+if [ -d ${workspace} ]
+then
+    echo "CA exists, skipping generation"
+    exit 0
+fi
+
+# Prepare work folder.
+mkdir -p ${workspace}/newcerts && touch ${workspace}/index.txt
+
+# Generate root CA signing request.
+openssl req \
+    -new \
+    -config ${config} \
+    -nodes \
+    -keyout ${workspace}/root.key \
+    -out ${workspace}/root.csr
+
+# Create and self sign the root certificate.
+openssl ca \
+    -batch \
+    -create_serial \
+    -config ${config} \
+    -extensions ext \
+    -extfile ${config} \
+    -selfsign \
+    -in ${workspace}/root.csr \
+    -keyfile ${workspace}/root.key \
+    -out ${workspace}/root.crt
+
+# Craft .pem file.
+cat ${workspace}/root.key ${workspace}/root.crt > ${workspace}/root.pem
