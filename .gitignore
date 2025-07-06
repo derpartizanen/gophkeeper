@@ -1,0 +1,17 @@
+# OS X internals.
+.DS_Store
+
+# Build artifacts.
+dist/
+
+# Output of the go coverage tool.
+coverage.*
+
+# Generated certification authority.
+ssl/ca/
+
+# Snap files.
+*.snap
+
+# Idea files.
+.idea

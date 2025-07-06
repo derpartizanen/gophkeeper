@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+# Execute migrations to initialize Postgres database.
+./migrate -database $DATABASE_URI -path ./migrations up

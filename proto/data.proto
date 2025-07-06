@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package proto;
+option go_package = "github.com/derpartizanen/gophkeeper/proto";
+
+// Authentication credentials.
+message Credentials {
+  // Login value.
+  string login = 1;
+  // Password value.
+  string password = 2;
+}
+
+// Arbitrary text data.
+message Text {
+  // Text data, limited to 4Kb.
+  string text = 1;
+}
+
+// Arbitrary binary data.
+message Binary {
+  // Binary data, limited to 4Kb.
+  bytes binary = 1;
+}
+
+// Bank card info.
+message Card {
+  // Card number.
+  string number = 1;
+  // Expiration date.
+  string expiration = 2;
+  // Card holder name.
+  string holder = 3;
+  // Card verification value.
+  int32 cvv = 4;
+}
